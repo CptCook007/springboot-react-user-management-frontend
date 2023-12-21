@@ -45,7 +45,7 @@ const userSlice = createSlice({
       .addCase(userLogin.rejected, (state, action) => {
         state.loading = false;
         state.user = null;
-        state.error = action.payload;
+        state.error = action.error;
       });
   },
 });
