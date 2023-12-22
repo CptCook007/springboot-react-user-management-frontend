@@ -4,26 +4,62 @@ import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
 export const userLogin = createAsyncThunk(
   "user/userLogin",
-  async (userCredentials) => {
-    const { data } = await instance
-      .post("/auth/login", userCredentials, {
+  async (userCredentials, { rejectWithValue }) => {
+    try {
+      const config = {
         headers: {
           "Content-Type": "application/json",
         },
-      })
-      .then((response) => {
-        const data = response.data;
-        const decodedJwt = jwtDecode(data.accessToken);
-        // console.log("token : ", data.accessToken);
-        // console.log("subject: ", decodedJwt.sub);
-        // Cookies.set("userToken", data.accessToken);
-        return {
-          username: decodedJwt.sub,
-          role: decodedJwt.role,
-        };
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+      };
+      const response = await instance.post(
+        "/auth/login",
+        userCredentials,
+        config
+      );
+      const data = response.data;
+      const decodedJwt = jwtDecode(data.accessToken);
+      Cookies.set("userToken", data.accessToken);
+      return {
+        username: decodedJwt.sub,
+        role: decodedJwt.role,
+      };
+    } catch (error) {
+      console.error(error);
+      if (error.response && error.response.status) {
+        return rejectWithValue(error.response.status);
+      } else {
+        return rejectWithValue(
+          "An error occurred while processing your request."
+        );
+      }
+    }
+  }
+);
+
+export const userRegister = createAsyncThunk(
+  "user/userRegister",
+  async (userData, { rejectWithValue }) => {
+    try {
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      };
+      const response = await instance.post(`/auth/register`, userData, config);
+      console.log(response);
+      if (response && response.data && response.data.error) {
+        return rejectWithValue(response.data.error);
+      }
+    } catch (error) {
+      console.log(error);
+      if (error.response.data) {
+        console.log(error.response.data);
+        return rejectWithValue(error.response.data);
+      } else {
+        return rejectWithValue(
+          "An error occurred while processing your request."
+        );
+      }
+    }
   }
 );
