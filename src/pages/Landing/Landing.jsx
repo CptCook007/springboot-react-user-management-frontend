@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import Login from "../../components/login/Login";
 import Signup from "../../components/signup/Signup";
 import { useDispatch, useSelector } from "react-redux";
@@ -11,8 +11,19 @@ export default function Landing() {
   const location = useLocation();
   console.log(location);
   const [LoginTab, setLoginTab] = useState(true);
-  const { loading, message } = useSelector((state) => state.user);
+  const { user, loading, message } = useSelector((state) => state.user);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user) {
+      user.role == "ROLE_ADMIN"
+        ? navigate("/admin/dashboard")
+        : navigate("/user/home");
+    } else {
+      navigate("/");
+    }
+  }, [user]);
 
   useEffect(() => {
     if (message) {

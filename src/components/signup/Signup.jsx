@@ -1,6 +1,6 @@
 import instance from "../../config/axiosConfig";
 import { useEffect, useState } from "react";
-import { Formik, Form, ErrorMessage, Field } from "formik";
+import { Formik, Form } from "formik";
 import InputComponent from "../inputs/InputComponent";
 import * as Yup from "yup";
 import { useNavigate } from "react-router-dom";
@@ -14,9 +14,9 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { userRegister } from "../../redux/actions/userActions";
 import { setError, setLoader } from "../../redux/reducers/userSlice";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 
-function Signup() {
+function Signup({ adminCreating, setModal }) {
   const avatar = "/avatar.jpg";
   const [profilePhoto, setProfilePhoto] = useState(null);
   const [profileImageUrl, setProfileImageUrl] = useState("");
@@ -27,6 +27,7 @@ function Signup() {
     if (error && error === "User Exists!") {
       toast.error(error, { pauseOnHover: false });
       dispatch(setError(false));
+      adminCreating && setModal(false);
     }
   }, [error]);
 
@@ -73,6 +74,7 @@ function Signup() {
             };
             console.log(userData);
             dispatch(userRegister(userData));
+            adminCreating && setModal(false);
             resetForm({
               values: initialValues,
             });
@@ -105,7 +107,9 @@ function Signup() {
 
   return (
     <>
-      <div className="flex justify-center font-bold text-xl mt-5">Hey</div>
+      {!adminCreating && (
+        <div className="flex justify-center font-bold text-xl mt-5">Hey</div>
+      )}
       <div className="w-full flex flex-col items-center gap-5 justify-center mt-2">
         <div className="flex flex-col">
           <div className="mb-2 flex justify-center">
@@ -140,48 +144,12 @@ function Signup() {
                   name="confirmPassword"
                   placeholder="Confirm Password"
                 />
-
-                {/* <div className="flex align-middle">
-            <input
-              type="text"
-              // value={username}
-              // onChange={usernameInputChangeHandler}
-              placeholder="Username"
-              className={`rounded-md h-10 w-96 px-3 border-black border  placeholder:text-secondary-600`}
-            ></input>
-          </div>
-        </div>
-        <div className="flex flex-col">
-          <div className="flex align-middle">
-            <input
-              type="password"
-              placeholder="Password"
-              // value={password}
-              // onChange={passwordInputChangeHandler}
-              className={`rounded-md h-10 w-96 px-3 border-black border  placeholder:text-secondary-600`}
-            ></input>
-          </div>
-        </div>
-        <div className="flex flex-col">
-          <div className="flex align-middle">
-            <input
-              type="password"
-              placeholder="Confirm Password"
-              // onChange={confirmPasswordInputChangeHandler}
-              // value={confirmPasswordString}
-              className={`rounded-md h-10 w-96 px-3  placeholder:text-secondary-600 ${
-                "border-black border"
-                // : "border-red-700 border-2"
-              }`}
-            ></input>
-          </div>
-        </div> */}
                 <div className="mt-12">
                   <button
                     className="bg-teal-500 text-white w-28 h-9 text-lg font-bold rounded-lg"
                     type="submit"
                   >
-                    Signup
+                    {adminCreating ? "Create" : "Signup"}
                   </button>
                 </div>
               </Form>

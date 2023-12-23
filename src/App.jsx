@@ -4,22 +4,21 @@ import Navbar from "./components/Navbar";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Landing from "./pages/Landing/Landing";
-import Home from "./pages/Home/Home";
-import Dashboard from "./pages/Dashboard/Dashboard";
+import Home from "./pages/user/Home/Home";
+import Dashboard from "./pages/admin/Dashboard/Dashboard";
+import ProfileSettings from "./pages/user/Home/ProfileSettings";
+import NetworkStatusChecker from "./components/NetworkStatusChecker";
 function App() {
   const { user } = useSelector((state) => state.user);
   const navigate = useNavigate();
   useEffect(() => {
-    if (user) {
-      user.role == "ROLE_ADMIN"
-        ? navigate("/admin/dashboard")
-        : navigate("/user/home");
-    } else {
+    if (!user) {
       navigate("/");
     }
   }, [user]);
   return (
     <>
+      <NetworkStatusChecker />
       {user && <Navbar />}
       <Routes>
         <Route
@@ -34,11 +33,18 @@ function App() {
           user.role == "ROLE_ADMIN" ? (
             <Route path="/admin/dashboard" element={<Dashboard />}></Route>
           ) : (
-            <Route path="/user/home" element={<Home />}></Route>
+            <>
+              <Route
+                path="/user/home/profile-settings"
+                element={<ProfileSettings />}
+              ></Route>
+              <Route path="/user/home" element={<Home />}></Route>
+            </>
           )
         ) : (
-          <Route path="/" element={<Landing />}></Route>
+          <></>
         )}
+        <Route path="/" element={<Landing />}></Route>
       </Routes>
     </>
   );

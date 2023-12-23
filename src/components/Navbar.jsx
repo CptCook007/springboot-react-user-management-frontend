@@ -11,7 +11,7 @@ export default function Navbar() {
   };
   return (
     <>
-      <nav className="flex justify-end w-[100%] h-1 px-8 py-5">
+      <nav className="flex justify-end w-[100%] h-20 px-8 py-5">
         <div>
           <button
             onClick={logoutButtonhandler}
